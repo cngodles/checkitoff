@@ -1,16 +1,60 @@
-<div class=”wrapper”>
- <h1>0</h1>
- <div class=”digits flex”>
-  <button>9</button>
-  <button>8</button>
-  <button>7</button>
-  <button>6</button>
-  <button>5</button>
-  <button>4</button>
-  <button>3</button>
-  <button>2</button>
-  <button>1</button>
-  <button>0</button>
-  <button>.</button>
- </div>
-</div>
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>CheckOff</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <style>
+      .day { display:block; }
+    </style>
+  </head>
+  <body>
+    <div id="wrapper">
+      
+    </div>
+    <script>
+      $(document).ready(function(){
+        checkit.init();
+      });
+      
+      var checkit = {
+        year:2018,
+        month:1,
+        monthname:"January",
+        monthdays:31,
+        date:null,
+        monthNames:["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"],
+        init:function(){
+          //First, what month is it?
+          this.d = new Date();
+          this.n = this.d.getMonth(),
+          this.monthname = this.monthNames[this.n];
+          this.y = this.d.getFullYear();
+          console.log(this.d, this.n, this.y);
+          //How many days do we need to render?
+          this.monthdays = this.helpers.daysInMonth(this.n, this.y);
+          console.log(this.monthdays);
+          var output = [];
+          output.push('<h1>'+this.monthname+'</h1>');
+          for(var i=1; i <= this.monthdays; i++){
+            output.push('<div class="day" data-on="">'+i+'</div>');
+            console.log(i);
+          }
+          $("#wrapper").html(output.join("\n"));
+        },
+        helpers:{
+          daysInMonth:function(month,year){
+            return new Date(year, month, 0).getDate();
+          }
+        }
+      };
+    </script>
+  </body>
+</html>
