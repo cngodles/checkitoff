@@ -2,17 +2,25 @@
 <html lang="en-US">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CheckOff</title>
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Archivo+Narrow:400,700" rel="stylesheet">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!--[if lt IE 9]>
       <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     
     <style>
-      .day { display:block; }
+      html  {box-sizing:border-box; }
+      *,:after,:before{box-sizing:inherit; }
+      body { font-family: 'Archivo Narrow', sans-serif; margin: 0;  }
+      a.day { display:block; border:1px solid; padding: 20px; text-align: center; width: 100px; height:100px; font-size: 40px; margin: 0 auto; color:#000; text-decoration: none; }
+      a.day.today { background-color: aquamarine; }
+      a.day.on { background-color: coral; }
+      h1 { font-size: 48px; text-align: center; }
     </style>
   </head>
   <body>
@@ -20,9 +28,18 @@
       
     </div>
     <script>
+      
+      //this.d.getDay() is day of the week.
+      
       $(document).ready(function(){
         checkit.init();
-      });
+      })
+      .on("click", ".day", function(e){
+        e.preventDefault();
+        $(this).toggleClass("on");
+        //alert($(this).data("day"));
+      })
+      ;
       
       var checkit = {
         year:2018,
@@ -30,24 +47,52 @@
         monthname:"January",
         monthdays:31,
         date:null,
+        today:null,
         monthNames:["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"],
+        returndata:[],
         init:function(){
           //First, what month is it?
           this.d = new Date();
-          this.n = this.d.getMonth(),
-          this.monthname = this.monthNames[this.n];
+          this.m = this.d.getMonth();
+          this.monthname = this.monthNames[this.m];
           this.y = this.d.getFullYear();
-          console.log(this.d, this.n, this.y);
+          console.log(this.d, this.m, this.y);
           //How many days do we need to render?
-          this.monthdays = this.helpers.daysInMonth(this.n, this.y);
+          this.monthdays = this.helpers.daysInMonth(this.m, this.y);
           console.log(this.monthdays);
           var output = [];
           output.push('<h1>'+this.monthname+'</h1>');
           for(var i=1; i <= this.monthdays; i++){
-            output.push('<div class="day" data-on="">'+i+'</div>');
+            output.push('<a href="#" class="day" data-day="'+i+'" id="'+this.y+'-'+(this.m+1)+'-'+i+'" data-on="">'+i+'</a>');
             console.log(i);
           }
           $("#wrapper").html(output.join("\n"));
+          $(".day[data-day="+this.d.getDate()+"]").addClass("today");
+          var winheight = $(window).height();
+          //alert(winheight);
+          $('html, body').animate({scrollTop: $(".today").offset().top - ((winheight / 2) - ($(".today").height() / 2)) }, 400);
+          this.getLatestData();
+        },
+        applyData:function(){
+          for(var i=0; i < this.returndata.length; i++){
+            console.log(this.returndata[i].id, this.returndata[i].on);
+            if(this.returndata[i].on === "y"){
+              $("#"+this.returndata[i].id).addClass("on");
+            }
+          }
+        },
+        getLatestData:function(){
+          var thisobj = this;
+          $.post("api.php", {do:"getmonth"}, function(data){
+            thisobj.returndata = data;
+            console.log(thisobj.returndata);
+            thisobj.applyData();
+          });
+        },
+        setData:function(id){
+          $.post("api.php", {"do":"updatedata", "id":id}, function(data){
+            
+          });
         },
         helpers:{
           daysInMonth:function(month,year){
