@@ -1,4 +1,6 @@
 <?php
+require_once("site_connect.php");
+
 if(isset($_POST['do'])){
   if($_POST['do'] == 'getmonth'){
     header('Content-Type: application/json');
