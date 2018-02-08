@@ -44,7 +44,7 @@ function yumdata_do($sql, $array = ''){
 
 function yumdata_array($sql, $array = ''){
 	global $db;
-	$data = '';
+	$data = array();
 	try {
 		//echo gettype($array);
 		if(gettype($array) == 'array'){

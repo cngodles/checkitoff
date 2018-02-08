@@ -19,7 +19,9 @@
       html  {box-sizing:border-box; }
       *,:after,:before{box-sizing:inherit; }
       body { font-family: 'Archivo Narrow', sans-serif; margin: 0;  }
-      a.day { display:block; border:1px solid; padding: 20px; text-align: center; width: 100px; height:100px; font-size: 40px; margin: 0 auto; color:#000; text-decoration: none; }
+		main { padding: 30px; }
+		#dataview { font-size: 0; }  
+	a.day { display:inline-block; border:1px solid; padding: 20px; text-align: center; width: 100px; height:100px; font-size: 40px; margin: 0; color:#000; text-decoration: none; }
       a.day.today { background-color: aquamarine; }
       a.day.on { background-color: coral; }
       h1 { font-size: 48px; text-align: center; }
@@ -27,9 +29,11 @@
   </head>
   <body>
     <div id="wrapper">
+		<main>
       <div class="g-signin2" data-onsuccess="onSignIn"></div>
       <div id="dataview"></div>
       <a href="#" onclick="signOut();">Sign out</a>
+		</main>
     </div>
     <script>
       
@@ -82,7 +86,15 @@
           var output = [];
           output.push('<h1>'+this.monthname+'</h1>');
           for(var i=1; i <= this.monthdays; i++){
-            output.push('<a href="#" class="day" data-day="'+i+'" id="'+this.y+'-'+(this.m+1)+'-'+i+'" data-on="">'+i+'</a>');
+			var month2 = this.m+1; 
+			var day2 = i;
+			if(month2 < 10){
+				month2 = "0"+month2;
+			}
+			if(day2 < 10){
+				day2 = "0"+day2;
+			}
+            output.push('<a href="#" class="day" data-day="'+i+'" id="'+this.y+'-'+(month2)+'-'+day2+'" data-on="">'+i+'</a>');
             console.log(i);
           }
           $("#dataview").html(output.join("\n"));
@@ -95,9 +107,10 @@
         applyData:function(){
           for(var i=0; i < this.returndata.length; i++){
             console.log(this.returndata[i].id, this.returndata[i].on);
-            if(this.returndata[i].on === "y"){
-              $("#"+this.returndata[i].id).addClass("on");
-            }
+			//(this.returndata.date)
+            //if(this.returndata[i].on === "y"){
+              $("#"+this.returndata[i].date).addClass("on");
+            //}
           }
         },
         getLatestData:function(){
