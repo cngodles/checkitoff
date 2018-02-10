@@ -3,7 +3,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="google-signin-client_id" content="733050426309-cpc2v2onlu7jlebk52qn6k9k325ccc7i.apps.googleusercontent.com">
+		<meta name="google-site-verification" content="I--YwNRIHWvu2C9f1YQm9oR4Jf8SdRCPHPuGHgBVlXY" />
+    <meta name="google-signin-client_id" content="733050426309-r8iiel6r6c0j2dvn2ibj20eps544a6hf.apps.googleusercontent.com">
     <title>CheckOff</title>
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="icon" href="favicon.ico">
@@ -14,14 +15,13 @@
     <!--[if lt IE 9]>
       <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    
     <style>
       html  {box-sizing:border-box; }
       *,:after,:before{box-sizing:inherit; }
       body { font-family: 'Archivo Narrow', sans-serif; margin: 0;  }
-		main { padding: 30px; }
-		#dataview { font-size: 0; }  
-	a.day { display:inline-block; border:1px solid; padding: 20px; text-align: center; width: 100px; height:100px; font-size: 40px; margin: 0; color:#000; text-decoration: none; }
+			main { padding: 30px; }
+			#dataview { font-size: 0; }  
+			a.day { display:inline-block; border:1px solid; padding: 20px; text-align: center; width: 100px; height:100px; font-size: 40px; margin: 0; color:#000; text-decoration: none; }
       a.day.today { background-color: aquamarine; }
       a.day.on { background-color: coral; }
       h1 { font-size: 48px; text-align: center; }
@@ -44,13 +44,22 @@
         console.log('Name: ' + profile.getName());
         console.log('Image URL: ' + profile.getImageUrl());
         console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+				var id_token = googleUser.getAuthResponse().id_token;
+				var g_userid = profile.getId();
+				$.post("/api.php", {"do":"setgoogleid", userid:g_userid, tokenid:id_token}, function(data){
+					console.log(data);
+					checkit.init();
+				});
       }
       
       function signOut() {
         var auth2 = gapi.auth2.getAuthInstance();
         auth2.signOut().then(function () {
-          console.log('User signed out.');
-        });
+					console.log('User signed out.');
+					$.post("/api.php", {"do":"logout"}, function(){
+						checkit.init();
+					});
+				});
       }
       
       //this.d.getDay() is day of the week.
@@ -60,6 +69,12 @@
       .on("click", ".day", function(e){
         e.preventDefault();
         $(this).toggleClass("on");
+				var thisdate = $(this).attr("id");
+				if($(this).hasClass("on")){
+					$.post("/api.php", {"do":"updatedata", action:"on", date:thisdate});
+				} else {
+					$.post("/api.php", {"do":"updatedata", action:"off", date:thisdate});			 
+				}
         //alert($(this).data("day"));
       })
       ;
@@ -86,14 +101,14 @@
           var output = [];
           output.push('<h1>'+this.monthname+'</h1>');
           for(var i=1; i <= this.monthdays; i++){
-			var month2 = this.m+1; 
-			var day2 = i;
-			if(month2 < 10){
-				month2 = "0"+month2;
-			}
-			if(day2 < 10){
-				day2 = "0"+day2;
-			}
+						var month2 = this.m+1; 
+						var day2 = i;
+						if(month2 < 10){
+							month2 = "0"+month2;
+						}
+						if(day2 < 10){
+							day2 = "0"+day2;
+						}
             output.push('<a href="#" class="day" data-day="'+i+'" id="'+this.y+'-'+(month2)+'-'+day2+'" data-on="">'+i+'</a>');
             console.log(i);
           }
@@ -107,7 +122,7 @@
         applyData:function(){
           for(var i=0; i < this.returndata.length; i++){
             console.log(this.returndata[i].id, this.returndata[i].on);
-			//(this.returndata.date)
+						//(this.returndata.date)
             //if(this.returndata[i].on === "y"){
               $("#"+this.returndata[i].date).addClass("on");
             //}

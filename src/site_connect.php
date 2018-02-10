@@ -1,5 +1,7 @@
 <?php
-$config = json_decode(file_get_contents("configuration.json"));
+//$config = json_decode(file_get_contents("configuration.json"));
+session_start();
+require_once("site_configuration.php");
 
 $admin_username = $config->database->username;
 $admin_password = $config->database->password;
